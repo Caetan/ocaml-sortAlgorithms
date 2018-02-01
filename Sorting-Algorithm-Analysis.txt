@@ -1,0 +1,399 @@
+1. INTRODUCCIÓN
+
+	Estudio comparativo y conclusiones alcanzadas de la ejecución de diversos algoritmos de ordenación en lenguaje OCaml, por Caetán Tojeiro Carpente.
+
+2. HARDWARE
+	
+	Las pruebas se han ejecutado en una máquina con las siguientes características:
+		- CPU: Intel Core i7-4790K 4.00 GHz
+		- Memoria RAM: Kingston HyperX Fury Black DDR3 1866MHz de 16GB, con 2 módulos de 8GB CL10
+		- Sistema Operativo: Ubuntu 14.04 LTS 64 bits
+		- Disco Duro: WD Blue 1TB SATA3 a 7200rpm con Buffer 64 MB Cache
+
+3. RESULTADOS
+
+	Las tablas de resultados presentadas a continuación vienen dada en segundos. Para las mediciones se han utilizado listas de números enteros, ordenadas y no ordenadas, de tamaño 2, 4, 8, 16, 32, 64, 128, 256 y 512 mil elementos. Cabe mencionar que las listas no ordenadas se han generado mediante la función fromto, y que se ha generado una única lista de enteros ordenada y una única lista de enteros no ordenada de cada uno de los tamaños, con el fin de que al realizar las pruebas los resultados obtenidos sean bajo las mismas hipótesis.
+
+
+	3.1 - ESTUDIO ISORT
+
+		#			ISORT
+		#
+		# 		isort ordenado
+		# - : float = 0.000101000000000017742
+		# - : float = 0.00136999999999998234
+		# - : float = 0.0003809999999999647
+		# - : float = 0.000761000000000011667
+		# - : float = 0.00247400000000003173
+		# - : float = 0.00479199999999996296
+		# - : float = 0.0137760000000000105
+		# - : float = 0.0301869999999999639
+		# Stack overflow during evaluation (looping recursion?).
+		#
+		#   	isort desordenado
+		# - : float = 0.0325810000000000266
+		# - : float = 0.12927699999999992
+		# - : float = 0.532209
+		# - : float = 2.36380000000000035
+		# - : float = 10.976643000000001
+		# - : float = 54.5662080000000103
+		#	(*)
+		#
+		#	isort_t ordenado
+		# - : float = 0.112351000000003864
+		# - : float = 0.452640999999999849
+		# - : float = 1.97513999999999612
+		# - : float = 8.64471099999998671
+		# - : float = 40.993218
+		#	(*)
+		#
+		#	isort_t desordenado
+		# - : float = 0.0563860000000033779
+		# - : float = 0.228813999999999851
+		# - : float = 1.01998700000000042
+		# - : float = 4.06920099999999252
+		# - : float = 18.4757129999999705
+		# - : float = 88.714777
+		#	(*)
+	
+		La primera conclusión obvia que se puede extraer es que el algoritmo tarda un tiempo notablemente inferior en ordenar una lista ya ordenada que una lista desordenada.
+		Analizando los resultados se puede ver que tanto para listas ordenadas como para listas desordenadas con un crecimiento de tamaño exponencial de razón 2, el tiempo de ordenación aumenta aproximadamente a razón x4.5 con respecto al tiempo empleado para la ordenación de la lista de tamaño inmediatamente anterior (**).
+		Se puede concluir que este es un algoritmo con complejidad computacional cuadrática O(n^2).
+		Además, se puede añadir que el algoritmo no puedo operar con, al menos, listas de tamaño mayor 512.000 elementos, aunque sí cabe mencionar que la función que no es recursiva terminal tiene una mayor eficiencia (menor tiempo de ordenación) que la recursiva terminal.
+
+
+	3.2 - ESTUDIO MSORT
+
+
+		# 			MSORT
+		#
+		# 		msort ordenado
+		# - : float = 0.00134299999999143438
+		# - : float = 0.00272900000001641274
+		# - : float = 0.00682399999999461215
+		# - : float = 0.0159270000000049095
+		# - : float = 0.0341980000000035
+		# - : float = 0.0781189999999867268
+		# - : float = 0.171526000000000067
+		# Stack overflow during evaluation (looping recursion?).
+		# Stack overflow during evaluation (looping recursion?).
+		#
+		#     	msort desordenado
+		# - : float = 0.00125900000000456203
+		# - : float = 0.0033620000000098571
+		# - : float = 0.00830500000000711225
+		# - : float = 0.0165519999999901302
+		# - : float = 0.038067999999981339
+		# - : float = 0.0804380000000151085
+		# - : float = 0.179811999999998307
+		# Stack overflow during evaluation (looping recursion?).
+		# Stack overflow during evaluation (looping recursion?).
+		#
+		# 	msort_qt ordenado
+		# - : float = 0.00271299999999996544
+		# - : float = 0.00586799999999243482
+		# - : float = 0.0138280000000179371
+		# - : float = 0.0306029999999850588
+		# - : float = 0.0623980000000017299
+		# - : float = 0.139367000000021335
+		# - : float = 0.308824999999984584
+		# - : float = 0.668608000000006086
+		# - : float = 1.45695799999998599
+		#
+		#   	msort_qt desordenado
+		# - : float = 0.00272499999999809
+		# - : float = 0.0059249999999906322
+		# - : float = 0.013862999999986414
+		# - : float = 0.0308080000000074961
+		# - : float = 0.0649879999999996
+		# - : float = 0.212222999999994499
+		# - : float = 0.312678000000005341
+		# - : float = 0.684969999999992751
+		# - : float = 1.56969800000001669
+
+
+
+		A diferencia del anterior algoritmo, el tiempo que precisa este para ordenar una lista desordenada y una lista ya ordenada es muy parejo.
+		Analizando los resultados se puede ver que tanto para listas ordenadas como para listas desordenadas con el mismo crecimiento exponencial de tamaño, el tiempo de ordenación aumenta en poco más que un factor x2 con respecto al tiempo empleado para la ordenación de la lista de tamaño inmediatamente anterior (**).
+		Este algoritmo aplica la técnica de Divide y Vencerás, y del que se puede concluir que tiene una complejidad computacional O(n*log(n)), la cual es notablemente menor que la del algoritmo de ordenación por inserción, lo que se traduce en un menor tiempo de computación y un menor incremento de tiempo al aumentar el tamaño de la lista.
+		Además, se puede añadir que el algoritmo no puedo operar con, al menos, listas de tamaño mayor 256.000 elementos, aunque sí cabe mencionar que la función que no es recursiva terminal tiene una mayor eficiencia (menor tiempo de ordenación) que la recursiva quasiterminal.
+
+
+	3.3 - ESTUDIO QSORT
+
+
+		# 		QSORT
+		#
+		# 	qsort ordenado
+		# - : float = 0.273745000000019445
+		# - : float = 0.746551000000010845
+		# - : float = 3.32189300000001708
+		# - : float = 13.8476619999999855
+		#	(*)
+		#
+		# 	qsort desordenado
+		# - : float = 0.00231899999999996
+		# - : float = 0.00464699999997719715
+		# - : float = 0.0130740000000741929
+		# - : float = 0.0263340000000198415
+		# - : float = 0.0587259999999787397
+		# - : float = 0.130375999999955638
+		# - : float = 0.293838999999991302
+		# - : float = 0.687167999999985568
+		# Stack overflow during evaluation (looping recursion?).
+		#
+		#       qsort_qt ordenado
+		# - : float = 0.204196999999965101
+		# - : float = 0.808357999999998356
+		# - : float = 3.27431299999994962
+		# - : float = 14.1347279999999955
+		#	(*)
+		#
+		#	qsort_qt desordenado
+		# - : float = 0.00253900000001294757
+		# - : float = 0.00533200000000988439
+		# - : float = 0.0147210000000086438
+		# - : float = 0.0290469999999913853
+		# - : float = 0.0638059999999995853
+		# - : float = 0.141272999999955573
+		# - : float = 0.311306000000001859
+		# - : float = 0.74390899999997373
+		# - : float = 1.57324900000003254
+
+	
+		En este último caso a estudiar, el algoritmo de ordenación rápida o quicksort, el primer resultado a simple vista que se puede apreciar es que la diferencia de tiempos entre la función no terminal y la quasiterminal es prácticamente nula, con la ventaja añadida de que esta última puede operar con listas de, al menos, tamaños mayores de 512.000 elementos.
+		Otra conclusión que arroja este estudio es que el factor de crecimiento de tiempo entre entradas consecutivas de la tabla es de un factor un poco mayor de x2.
+		También es reseñable que este algoritmo es más eficiente con listas desordenadas que con listas ordenadas.
+		La complejidad del quicksort, por lo tanto, es de O(n*log(n)) tanto en su mejor caso como en su caso medio (ya que este se aproxima al mejor caso). Mientras que en el peor caso llega a ser de complejidad cuadrática O(n^2).
+
+
+
+	3.4 - MEDICIONES ANÓMALAS
+
+		Cabe resaltar que, en el caso del algoritmo de ordenación quicksort, el problema para listas grandes que ya están ordenadas o casi ordenadas no es el llenado de la pila, sino la inexistencia de memoria suficiente para guardar las listas que se van generando durante la ejecución, es decir, en lugar de una excepción del tipo "# Stack overflow during evaluation (looping recursion?).", se lanza una excepción del tipo "Out of Memory" o del tipo "Killed".
+
+
+	3.5 - LEYENDA
+
+		(*) A partir de ciertos tamaños de listas el algoritmo, al no ser de complejidad lineal, tarda demasiado tiempo en completarse, algo irrelevante a la hora de estudiar los tiempos puesto que se pueden modelar con una función matemática.
+		(**) Esta conclusión se ha obtenido tras la repetición del experimento un cierto número de veces y con una lista desordenada generada de manera aleatoria en cada uno de los experimentos.
+		(***) Para tiempo muy pequeños las mediciones no son del todo correctas por la forma de medir el tiempo que se ha realizado.
+
+	
+
+
+4. CONCLUSIONES
+
+	La primera conclusión que arroja este estudio es que para listas de tamaño mayores que 512.000 elementos (al menos) no es posible operar con funciones "Non-tail recursive" para los algoritmos de inserción y quicksort, mientras que el algoritmo de fusión tiene una restricción de tamaño de lista aún menor (al menos 256.000 elementos).
+	Otra conclusión es que para listas ordenadas los algoritmos de inserción y fusión son mucho más rápidos que para listas no ordenadas. Sin embargo, para el caso del algoritmo de ordenación rápida esta regla no se cumple, y la ordenación de listas desordenadas es más rápida que la de listas ordenadas.
+	Tal y como denota el nombre, los algoritmos de ordenación quicksort_qt y msort_qt son funciones quasiterminales, es decir, están implementadas con funciones terminales pero ellas mismas no son funciones terminales. Esto no genera un problema a la hora de utilizarlas en listas grandes puesto que las funciones que podrían llenar la pila son terminales, por lo que no la llenarán.
+
+
+
+5. INSTRUCIONES EJECUTADAS
+	
+	Las ejecuciones que se encuentran comentadas conrresponden a ejecuciones que no aparecen reflejadas en la tabla de tiempos presentada anteriormente, puesto que el tiempo de ejecución es demasiado grande. Por otra parte, en el algoritmo quicksort, las funciones comentadas y con un #Killed indica que ha surgido el problema ya mencionado anteriormente con la acumulación de listas en memoria.
+
+	
+		(*Ejercicio 5*)
+	let listaordenada2 = fromto 1 2000;;
+	let listaordenada4 = fromto 1 4000;;  
+	let listaordenada8 = fromto 1 8000;;
+	let listaordenada16 = fromto 1 16000;; 
+	let listaordenada32 = fromto 1 32000;;
+	let listaordenada64 = fromto 1 64000;;
+	let listaordenada128 = fromto 1 128000;; 
+	let listaordenada256 = fromto 1 256000;;
+	let listaordenada512 = fromto 1 512000;;
+
+	let listadesordenada2 = rlist_t 2000 2000;;
+	let listadesordenada4 = rlist_t 4000 4000;;  
+	let listadesordenada8 = rlist_t 8000 8000;;
+	let listadesordenada16 = rlist_t 16000 16000;; 
+	let listadesordenada32 = rlist_t 32000 32000;;
+	let listadesordenada64 = rlist_t 64000 64000;;
+	let listadesordenada128 = rlist_t 128000 128000;; 
+	let listadesordenada256 = rlist_t 256000 256000;;
+	let listadesordenada512 = rlist_t 512000 512000;; 
+
+
+		(*ISORT*)
+
+	print_endline "ISORT";;
+	print_endline "isort ordenado";;
+
+	crono isort listaordenada2;;
+	crono isort listaordenada4;;
+	crono isort listaordenada8;;
+	crono isort listaordenada16;;
+	crono isort listaordenada32;;
+	crono isort listaordenada64;;
+	crono isort listaordenada128;;
+	crono isort listaordenada256;;
+	crono isort listaordenada512;;
+
+	print_endline "isort desordenado";;
+
+	crono isort listadesordenada2;;
+	crono isort listadesordenada4;;
+	crono isort listadesordenada8;;
+	crono isort listadesordenada16;;
+	crono isort listadesordenada32;;
+	crono isort listadesordenada64;;
+	(*
+	crono isort listadesordenada128;;
+	crono isort listadesordenada256;;
+	crono isort listadesordenada512;;
+	*)
+
+	(***********************************************************)
+
+	print_endline "isort_t ordenado";;
+
+	crono isort_t listaordenada2;;
+	crono isort_t listaordenada4;;
+	crono isort_t listaordenada8;;
+	crono isort_t listaordenada16;;
+	crono isort_t listaordenada32;;
+	(*crono isort_t listaordenada64;;
+	crono isort_t listaordenada128;;
+	crono isort_t listaordenada256;;
+	crono isort_t listaordenada512;;
+	*)
+
+	print_endline "isort_t desordenado";;
+
+	crono isort_t listadesordenada2;;
+	crono isort_t listadesordenada4;;
+	crono isort_t listadesordenada8;;
+	crono isort_t listadesordenada16;;
+	crono isort_t listadesordenada32;;
+	crono isort_t listadesordenada64;;
+	(*
+	crono isort_t listadesordenada128;;
+	crono isort_t listadesordenada256;;
+	crono isort_t listadesordenada512;;
+	*)
+
+	(***********************************************************)
+	(***********************************************************)
+
+		(*MSORT*)
+	
+	print_endline "MSORT";;
+	print_endline "msort ordenado";;
+
+	crono msort listaordenada2;;
+	crono msort listaordenada4;;
+	crono msort listaordenada8;;
+	crono msort listaordenada16;;
+	crono msort listaordenada32;;
+	crono msort listaordenada64;;
+	crono msort listaordenada128;;
+	crono msort listaordenada256;;
+	crono msort listaordenada512;;
+
+
+	print_endline "msort desordenado";;
+
+	crono msort listadesordenada2;;
+	crono msort listadesordenada4;;
+	crono msort listadesordenada8;;
+	crono msort listadesordenada16;;
+	crono msort listadesordenada32;;
+	crono msort listadesordenada64;;
+	crono msort listadesordenada128;;
+	crono msort listadesordenada256;;
+	crono msort listadesordenada512;;
+
+	(***********************************************************)
+
+	print_endline "msort_qt ordenado";;
+
+	crono msort_qt listaordenada2;;
+	crono msort_qt listaordenada4;;
+	crono msort_qt listaordenada8;;
+	crono msort_qt listaordenada16;;
+	crono msort_qt listaordenada32;;
+	crono msort_qt listaordenada64;;
+	crono msort_qt listaordenada128;;
+	crono msort_qt listaordenada256;;
+	crono msort_qt listaordenada512;;
+
+	print_endline "msort_qt desordenado";;
+
+	crono msort_qt listadesordenada2;;
+	crono msort_qt listadesordenada4;;
+	crono msort_qt listadesordenada8;;
+	crono msort_qt listadesordenada16;;
+	crono msort_qt listadesordenada32;;
+	crono msort_qt listadesordenada64;;
+	crono msort_qt listadesordenada128;;
+	crono msort_qt listadesordenada256;;
+	crono msort_qt listadesordenada512;;
+
+
+
+	(***********************************************************)
+	(***********************************************************)
+
+		(*QSORT*)
+	
+	print_endline "QSORT";;
+	print_endline "qsort ordenado";;
+
+	crono qsort listaordenada2;;
+	crono qsort listaordenada4;;
+	crono qsort listaordenada8;;
+	crono qsort listaordenada16;;
+	(*
+	crono qsort listaordenada32;;  #Killed
+	crono qsort listaordenada64;;
+	crono qsort listaordenada128;;
+	crono qsort listaordenada256;;
+	crono qsort listaordenada512;;
+	*)
+
+	print_endline "qsort desordenado";;
+
+	crono qsort listadesordenada2;;
+	crono qsort listadesordenada4;;
+	crono qsort listadesordenada8;;
+	crono qsort listadesordenada16;;
+	crono qsort listadesordenada32;;
+	crono qsort listadesordenada64;;
+	crono qsort listadesordenada128;;
+	crono qsort listadesordenada256;;
+	crono qsort listadesordenada512;;
+
+	(***********************************************************)
+
+	print_endline "qsort_qt ordenado";;
+
+	crono qsort_qt listaordenada2;;
+	crono qsort_qt listaordenada4;;
+	crono qsort_qt listaordenada8;;
+	crono qsort_qt listaordenada16;;
+	(*
+	crono qsort_qt listaordenada32;;  #Killed
+	crono qsort_qt listaordenada64;;
+	crono qsort_qt listaordenada128;;
+	crono qsort_qt listaordenada256;;
+	crono qsort_qt listaordenada512;;
+	*)
+
+	print_endline "qsort_qt desordenado";;
+
+	crono qsort_qt listadesordenada2;;
+	crono qsort_qt listadesordenada4;;
+	crono qsort_qt listadesordenada8;;
+	crono qsort_qt listadesordenada16;;
+	crono qsort_qt listadesordenada32;;
+	crono qsort_qt listadesordenada64;;
+	crono qsort_qt listadesordenada128;;
+	crono qsort_qt listadesordenada256;;
+	crono qsort_qt listadesordenada512;;
+
+
+
+	
