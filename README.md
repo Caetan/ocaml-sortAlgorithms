@@ -1,4 +1,4 @@
-# ocaml-sortAlgorithms
+# Ocaml Sorting Algorithms
 Implementation of some sorting algorithms and analysis of them.
 
 Algorithms implemented:
